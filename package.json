@@ -1,0 +1,23 @@
+{
+  "name": "kibodo",
+  "version": "0.0.1",
+  "description": "Keyboard-only frontend framework",
+  "main": "src/index.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dafaque/kibodo.git"
+  },
+  "keywords": [
+    "frontend",
+    "framework"
+  ],
+  "author": "Dafaque",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dafaque/kibodo/issues"
+  },
+  "homepage": "https://github.com/Dafaque/kibodo#readme"
+}
