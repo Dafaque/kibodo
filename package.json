@@ -10,14 +10,10 @@
       "typescript": "./src/index.ts",
       "import": "./src/index.ts",
       "require": "./src/index.ts"
+    },
+    "./themes/default.css": {
+      "import": "./themes/default.css"
     }
-  },
-  "files": [
-    "src",
-    "themes"
-  ],
-  "scripts": {
-    "test": ""
   },
   "repository": {
     "type": "git",
