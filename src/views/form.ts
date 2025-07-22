@@ -1,6 +1,21 @@
 import View from "./view.js";
 
+interface Field {
+    name: string;
+    label: string;
+    type: string;
+    placeholder: string;
+    readonly: boolean;
+    value: string;
+    defaultValue: string;
+}
+
 export default class Form extends View {
+    fields: Record<string, Field>;
+    currentFieldIndex: number;
+    values: Record<string, string>;
+    onSave: ((values: Record<string, string>) => void) | null;
+
     constructor() {
         super();
         this.fields = {};
@@ -14,7 +29,7 @@ export default class Form extends View {
     }
 
 
-    addField(name, label, type, options = {}) {
+    addField(name: string, label: string, type: string, options: Record<string, any> = {}): void {
         const field = {
             name,
             label,
@@ -48,7 +63,7 @@ export default class Form extends View {
             
             const fieldGroup = document.createElement('div');
             fieldGroup.className = 'form-group';
-            fieldGroup.dataset.fieldIndex = index;
+            fieldGroup.dataset.fieldIndex = index.toString();
             
             if (index === this.currentFieldIndex) {
                 fieldGroup.classList.add('selected');
@@ -89,9 +104,9 @@ export default class Form extends View {
         saveButton.className = 'btn save-button';
         saveButton.textContent = 'Save';
         saveButton.type = 'submit';
-        saveButton.dataset.fieldIndex = this.fields.length;
+        saveButton.dataset.fieldIndex = this.fields.length.toString();
         
-        if (this.currentFieldIndex === this.fields.length) {
+        if (this.currentFieldIndex === Object.keys(this.fields).length) {
             saveButton.classList.add('selected');
         }
         
@@ -100,7 +115,7 @@ export default class Form extends View {
         return form;
     }
 
-    onKeyDown(e) {
+    onKeyDown(e: KeyboardEvent) {
         switch (e.key) {
             case 'ArrowUp':
                 e.preventDefault();
@@ -124,7 +139,7 @@ export default class Form extends View {
         }
     }
 
-    navigateField(direction) {
+    navigateField(direction: number) {
         // Убираем выделение с текущего элемента
         const currentSelected = document.querySelector('.form-group.selected, .save-button.selected');
         if (currentSelected) {
@@ -189,33 +204,33 @@ export default class Form extends View {
         }
     }
 
-    editField(field) {
+    editField(field: Field) {
         if (field.type === 'checkbox') {
             // Переключаем checkbox
-            this.values[field.name] = !this.values[field.name];
+            this.values[field.name] = !this.values[field.name] ? 'true' : 'false';
             const checkbox = document.querySelector(`[data-field-name="${field.name}"]`);
             if (checkbox) {
                 checkbox.textContent = this.values[field.name] ? '[X]' : '[ ]';
             }
         } else if (field.type === 'select') {
             // Переходим к выбору опции
-            const currentPath = window.app.router.getCurrentPath();
-            const selectPath = this.getChildPath(currentPath, "select-edit");
+            const currentPath = window.app.router?.getCurrentPath();
+            const selectPath = this.getChildPath(currentPath || "", "select-edit");
             
-            window.app.router.navigate(selectPath, {
+            window.app?.router?.navigate(selectPath, {
                 field: field,
                 currentValue: this.values[field.name],
-                onSave: (value) => {
+                onSave: (value: any) => {
                     this.values[field.name] = value;
                     this.render();
                 }
             });
         } else {
             // Переходим к вводу текста
-            const currentPath = window.app.router.getCurrentPath();
-            const textPath = this.getChildPath(currentPath, "text-edit");
+            const currentPath = window.app?.router?.getCurrentPath();
+            const textPath = this.getChildPath(currentPath || "", "text-edit");
             
-            window.app.router.navigate(textPath, {
+            window.app?.router?.navigate(textPath, {
                 field: field,
                 currentValue: this.values[field.name],
                 onSave: (value) => {
@@ -237,9 +252,9 @@ export default class Form extends View {
         // Обрабатываем стилизованные checkbox
         const checkboxes = document.querySelectorAll('.checkbox');
         checkboxes.forEach(checkbox => {
-            const fieldName = checkbox.dataset.fieldName;
+            const fieldName = (checkbox as HTMLElement).dataset.fieldName;
             if (fieldName) {
-                this.values[fieldName] = checkbox.textContent === '[X]';
+                this.values[fieldName] = (checkbox as HTMLElement).textContent === '[X]' ? 'true' : 'false';
             }
         });
         
@@ -249,7 +264,7 @@ export default class Form extends View {
         }
     }
 
-    onSubmit(e) {
+    onSubmit(e: Event) {
         e.preventDefault();
         this.save();
     }

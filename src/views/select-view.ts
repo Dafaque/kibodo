@@ -1,7 +1,10 @@
-import View from "./view.js";
-import Menu from "./menu.js";
+import View from "./view";
+import Menu from "./menu";
 
 export default class SelectView extends View {
+    menu: Menu | null;
+    onSave: ((value: any) => void) | null;
+
     constructor() {
         super();
         this.menu = null;
@@ -41,7 +44,7 @@ export default class SelectView extends View {
         return container;
     }
 
-    onKeyDown(e) {
+    onKeyDown(e: KeyboardEvent) {
         if (this.menu) {
             this.menu.onKeyDown(e);
         }

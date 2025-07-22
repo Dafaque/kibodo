@@ -1,7 +1,12 @@
-import View from "./view.js";
+import View from "./view";
 
 export default class TextView extends View {
-    constructor(data) {
+    value: string;
+    placeholder: string;
+    onSave: (value: string) => void;
+    field: any;
+
+    constructor(data: any) {
         super();
         this.setTitle(`Edit ${data.field.label}`);
         this.value = data.currentValue;
@@ -35,8 +40,8 @@ export default class TextView extends View {
         return container;
     }
 
-    onKeyDown(e) {
-        const input = document.querySelector('.text-input');
+    onKeyDown(e: KeyboardEvent) {
+        const input = document.querySelector('.text-input') as HTMLInputElement;
         
         switch (e.key) {
             case 'Enter':
@@ -52,7 +57,7 @@ export default class TextView extends View {
     }
 
     save() {
-        const input = document.querySelector('.text-input');
+        const input = document.querySelector('.text-input') as HTMLInputElement;
         const value = input.value;
         
         if (this.onSave) {

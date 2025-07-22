@@ -1,13 +1,21 @@
-import View from "./view.js";
+import View from "./view";
+
+interface Option {
+    label: string;
+    action: () => void;
+}
 
 export default class Menu extends View {
-    constructor(options = []) {
+    options: any[];
+    selectedIndex: number;
+
+    constructor(options: Option[] = []) {
         super();
         this.options = options;
         this.selectedIndex = 0;
     }
 
-    addItem(text, action) {
+    addItem(text: string, action: () => void) {
         this.options.push({ label: text, action });
     }
 
@@ -23,7 +31,7 @@ export default class Menu extends View {
             }
             
             item.textContent = option.label || option;
-            item.dataset.index = index;
+            item.dataset.index = index.toString();
             
             if (option.action) {
                 item.dataset.action = option.action;

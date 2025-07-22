@@ -1,8 +1,16 @@
-import Router from "./router.js";
-import SelectView from "./select-view.js";
-import TextView from "./text-view.js";
+import Router from "./router";
+import View from "./views/view";
+
+declare global {
+    interface Window {
+        app: App;
+    }
+}
 
 export default class App {
+    currentView: View | null;
+    router: Router | null;
+
     constructor() {
         this.currentView = null;
         this.router = null;
@@ -10,6 +18,7 @@ export default class App {
         // Глобальный обработчик ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                e.preventDefault();
                 if (this.currentView && this.currentView.goBack) {
                     this.currentView.goBack();
                 }
@@ -37,11 +46,11 @@ export default class App {
         window.app = this;
     }
     
-    setCurrentView(view) {
+    setCurrentView(view: View | null) {
         this.currentView = view;
     }
     
-    setRouter(router) {
+    setRouter(router: Router) {
         this.router = router;
     }
 }

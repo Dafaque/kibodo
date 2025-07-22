@@ -1,11 +1,15 @@
 export default class View {
+    data: any;
+    container: HTMLElement | null;
+    title: string | null;
+
     constructor() {
         this.data = null;
         this.container = null;
         this.title = null; // Автоматический title
     }
 
-    setTitle(title) {
+    setTitle(title: string) {
         this.title = title;
     }
 
@@ -24,13 +28,13 @@ export default class View {
             const titleElement = document.createElement('h1');
             titleElement.textContent = this.title;
             titleElement.classList.add('title');
-            this.container.appendChild(titleElement);
+            this.container?.appendChild(titleElement);
         }
         
         // Рендерим содержимое
         const child = this.renderContent();
-        if (child) {
-            this.container.appendChild(child);
+        if (child != null && child != undefined) {
+            this.container?.appendChild(child);
         }
         
         // Заменяем содержимое app
@@ -48,16 +52,16 @@ export default class View {
     }
 
     goBack() {
-        if (this.app && this.app.router) {
+        if (window.app && window.app.router) {
             const currentPath = window.app.router.getCurrentPath();
-            const parentPath = this.getParentPath(currentPath);
+            const parentPath = this.getParentPath(currentPath || "");
             if (parentPath) {
-                this.app.router.navigate(parentPath);
+                window.app.router.navigate(parentPath);
             }
         }
     }
 
-    getParentPath(path) {
+    getParentPath(path: string) {
         const parts = path.split('/').filter(part => part);
         if (parts.length === 0) {
             return null;
@@ -70,15 +74,15 @@ export default class View {
     }
 
     // Методы для обработки событий (переопределяются в наследниках)
-    onKeyDown(e) {
+    onKeyDown(e: KeyboardEvent) {
         // Переопределяется в наследниках
     }
 
-    onKeyUp(e) {
+    onKeyUp(e: KeyboardEvent) {
         // Переопределяется в наследниках
     }
 
-    onSubmit(e) {
+    onSubmit(e: Event) {
         // Переопределяется в наследниках
     }
 
@@ -88,6 +92,6 @@ export default class View {
     }
 
     // Вью показана
-    appear(args) {}
+    appear(args: any) {}
 }
  

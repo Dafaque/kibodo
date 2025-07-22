@@ -1,6 +1,10 @@
-import View from "./view.js";
+import View from "./view";
 
 export default class Table extends View {
+    data: any[];
+    selectedRow: number;
+    onSelected: ((data: any) => void) | null;
+
     constructor(data = []) {
         super();
         this.data = data;
@@ -8,11 +12,11 @@ export default class Table extends View {
         this.onSelected = null;
     }
 
-    setData(data) {
+    setData(data: any[]) {
         this.data = data;
     }
 
-    setOnSelected(callback) {
+    setOnSelected(callback: (data: any) => void) {
         this.onSelected = callback;
     }
 
@@ -71,7 +75,7 @@ export default class Table extends View {
         return container;
     }
 
-    onKeyDown(e) {
+    onKeyDown(e: KeyboardEvent) {
         switch (e.key) {
             case 'ArrowUp':
                 e.preventDefault();
