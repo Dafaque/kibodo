@@ -15,7 +15,7 @@ class Router {
         this.currentPath = null;
     }
 
-    register(path, ViewClass) {
+    register(path, ViewClass) { // TODO Вот это нафиг. Все через стек экранов методами push/pop
         this.routes.set(path, ViewClass);
         
         // Автоматически регистрируем маршруты для редактирования
@@ -25,10 +25,10 @@ class Router {
     // Автоматически регистрируем маршруты для редактирования
     registerEditRoutes(path: string, ViewClass: any) {
         // Импортируем view'ы для редактирования
-        const textPath = this.getChildPath(path, "text-edit");
+        const textPath = this.getChildPath(path, "text-edit"); // TODO: Костыль для отображения отдельных оконо селекта и текста с любой вью. Переделать на push/pop
         this.routes.set(textPath, TextView);
         
-        const selectPath = this.getChildPath(path, "select-edit");
+        const selectPath = this.getChildPath(path, "select-edit"); // TODO: Костыль для отображения отдельных оконо селекта и текста с любой вью. Переделать на push/pop из компонента Form
         this.routes.set(selectPath, SelectView);
     }
 
@@ -40,7 +40,7 @@ class Router {
         return parentPath + "/" + childSegment;
     }
 
-    navigate(path: string, data: any = null) {
+    navigate(path: string, data: any = null) { // TODO: переделать на стек экранов
         console.log(`Navigating to: ${path}`);
         
         // Проверяем, есть ли уже созданный view для этого пути

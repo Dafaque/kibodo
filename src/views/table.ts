@@ -4,6 +4,7 @@ export default class Table extends View {
     data: any[];
     selectedRow: number;
     onSelected: ((data: any) => void) | null;
+    // TODO добавить атрибут dataUrl. Подразумевается, что там будет храниться ссылка на получения данных методом GET. 
 
     constructor(data = []) {
         super();

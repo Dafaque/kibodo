@@ -190,7 +190,7 @@ export default class Form extends View {
         }
     }
 
-    handleEnter() {
+    handleEnter() { // TODO: Костыль какаой-то
         if (this.currentFieldIndex === Object.keys(this.fields).length) {
             // Кнопка Save
             this.save();
@@ -217,7 +217,7 @@ export default class Form extends View {
             const currentPath = window.app.router?.getCurrentPath();
             const selectPath = this.getChildPath(currentPath || "", "select-edit");
             
-            window.app?.router?.navigate(selectPath, {
+            window.app?.router?.navigate(selectPath, { // TODO Обычный push
                 field: field,
                 currentValue: this.values[field.name],
                 onSave: (value: any) => {
@@ -230,7 +230,7 @@ export default class Form extends View {
             const currentPath = window.app?.router?.getCurrentPath();
             const textPath = this.getChildPath(currentPath || "", "text-edit");
             
-            window.app?.router?.navigate(textPath, {
+            window.app?.router?.navigate(textPath, { // TODO Обычный push, нафиг сложную навигацию
                 field: field,
                 currentValue: this.values[field.name],
                 onSave: (value) => {
@@ -241,7 +241,7 @@ export default class Form extends View {
         }
     }
 
-    getChildPath(parentPath, childSegment) {
+    getChildPath(parentPath, childSegment) { // TODO Костыль
         if (parentPath === "/") {
             return "/" + childSegment;
         }

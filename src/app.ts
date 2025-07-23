@@ -3,7 +3,7 @@ import View from "./views/view";
 
 declare global {
     interface Window {
-        app: App;
+        app: App; // TODO: костыль, сделать нормально через статичесий синглтон или еще как
     }
 }
 
@@ -15,6 +15,7 @@ export default class App {
         this.currentView = null;
         this.router = null;
         
+        // TODO нафиг делегирование события. В currentView просто вызываем onUpPressed, onDown..... В фрейме 6 клавиш, больше не будет.
         // Глобальный обработчик ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
