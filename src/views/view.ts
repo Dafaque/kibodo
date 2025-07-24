@@ -1,33 +1,21 @@
 export default class View {
-    data: any;
     container: HTMLElement | null;
     title: string | null;
     error: string | null;
 
     constructor() {
-        this.data = null;
         this.container = null;
         this.title = null;
-        // TODO нужен дефолтный атрибут error, котрый если не null будет вместо renderContent рендерить бокс с ошибкой а-ля алерт. В фреймворке не простых элементов для текста, надо чё-то придумать.
-
+        this.error = null;
         // TODO нужно в найти место видимое всегда для юзера, и там оставить лейбл как управлять через клаву/esc/enter
 
         // TODO нужен терминал-стайл спиннер. Через методы управлять показом спиннера.
-    }
-
-    setTitle(title: string) {
-        this.title = title;
     }
 
     render() {
         // Создаем контейнер
         this.container = document.createElement('div');
         this.container.className = 'view';
-        
-        // Устанавливаем title из data если он есть
-        if (this.data?.field?.label) {
-            this.title = this.data.field.label;
-        }
         
         // Добавляем заголовок если есть
         if (this.title) {
@@ -36,11 +24,17 @@ export default class View {
             titleElement.classList.add('title');
             this.container?.appendChild(titleElement);
         }
+
+        var content: HTMLElement | null = null;
+        if (this.error) {
+            content = this.renderError();
+        } else {
+            content = this.renderContent();
+        }
         
         // Рендерим содержимое
-        const child = this.renderContent();
-        if (child != null && child != undefined) {
-            this.container?.appendChild(child);
+        if (content) {
+            this.container?.appendChild(content);
         }
         
         // Заменяем содержимое app
@@ -53,8 +47,20 @@ export default class View {
         return this.container;
     }
 
-    renderContent() {
+    renderContent():HTMLElement | null {
         // Переопределяется в наследниках
+        return null;
+    }
+
+    renderError():HTMLElement {
+        const error = document.createElement('fieldset');
+        const legend = document.createElement('legend');
+        legend.textContent = this.error;
+        error.appendChild(legend);
+        const message = document.createElement('pre');
+        message.textContent = this.error;
+        error.appendChild(message);
+        return error;
     }
 
     goBack() {

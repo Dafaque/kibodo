@@ -8,36 +8,39 @@ export default class App {
     constructor(homeView: View) {
         this.view = homeView;
         this.viewsStack = [homeView];
-        // TODO нафиг делегирование события. В currentView просто вызываем onUpPressed, onDown..... В фрейме 6 клавиш, больше не будет.
-        // Глобальный обработчик ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                if (this.view && this.view.goBack) {
-                    this.view.goBack();
-                }
-            }
-        });
-        
-        // Проксирование событий в currentView
-        document.addEventListener('keydown', (e) => {
-            if (this.view && this.view.onKeyDown) {
-                this.view.onKeyDown(e);
-            }
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            if (this.view && this.view.onKeyUp) {
-                this.view.onKeyUp(e);
-            }
-        });
-        
-        document.addEventListener('submit', (e) => {
-            if (this.view && this.view.onSubmit) {
-                this.view.onSubmit(e);
-            }
-        });
+        this.listenKeyboard();
         window.app = this;
+    }
+
+    listenKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            e.preventDefault();
+           switch (e.key) {
+            case 'Escape':
+                this.handleESC();
+                break;
+            case 'ArrowUp':
+                this.view?.onUp();
+                break;
+            case 'ArrowDown':
+                this.view?.onDown();
+                break;
+            case 'Enter':
+                this.view?.onSubmit();
+                break;
+            default:
+                this.handleKeyEvent(e);
+           }
+        });
+
+    }
+
+    handleKeyEvent(e: KeyboardEvent) {
+        
+    }
+
+    handleESC() {
+        this.pop();
     }
     
     setView(view: View | null) {

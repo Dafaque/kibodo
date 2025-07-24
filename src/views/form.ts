@@ -115,28 +115,15 @@ export default class Form extends View {
         return form;
     }
 
-    onKeyDown(e: KeyboardEvent) {
-        switch (e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                this.navigateField(-1);
-                break;
-                
-            case 'ArrowDown':
-                e.preventDefault();
-                this.navigateField(1);
-                break;
-                
-            case 'Tab':
-                e.preventDefault();
-                this.navigateField(1);
-                break;
-                
-            case 'Enter':
-                e.preventDefault();
-                this.handleEnter();
-                break;
-        }
+    onUp = () => {
+        this.navigateField(-1);
+    }
+    onDown = () => {
+        this.navigateField(1);
+    }
+
+    onSubmit() {
+        this.save();
     }
 
     navigateField(direction: number) {
@@ -262,10 +249,5 @@ export default class Form extends View {
         if (this.onSave) {
             this.onSave(this.values);
         }
-    }
-
-    onSubmit(e: Event) {
-        e.preventDefault();
-        this.save();
     }
 }
