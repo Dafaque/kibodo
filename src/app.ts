@@ -44,6 +44,7 @@ export default class App {
         this.view = view;
     }
 
+    //! ВЬЮ ПОДИСЫВАЕТСЯ НА ПУШ ЕСЛИ ОЧЕТ ВИДЕТЬ ИЗМЕНЕНИЯ ВО ЬЮ В РЕЗУЛЬТАТЕ POP
     push(view: View, args?: any): Promise<any> {
         let callback = new Promise((resolve, reject) => { 
             this.viewsStack.push(view);
@@ -56,6 +57,7 @@ export default class App {
         return callback;
     }
 
+    //! ВОЗВРАЩАЕМ ДАННЫЕ ЕСЛИ РОДИТЕЛЬСКОЕ ВЬЮ ОЖИДАЕТ ИЗМЕНЕНИЯ
     pop(args?: any) {
         if (this.viewsStack.length === 1) {
             return;
