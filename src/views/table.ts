@@ -35,7 +35,6 @@ export default class Table extends View {
         
         // Создаем таблицу
         const table = document.createElement('table');
-        table.classList.add('terminal-table');
         
         // Заголовки
         const thead = document.createElement('thead');

@@ -2,11 +2,12 @@ export default class View {
     data: any;
     container: HTMLElement | null;
     title: string | null;
+    error: string | null;
 
     constructor() {
         this.data = null;
         this.container = null;
-        this.title = null; // Автоматический title
+        this.title = null;
         // TODO нужен дефолтный атрибут error, котрый если не null будет вместо renderContent рендерить бокс с ошибкой а-ля алерт. В фреймворке не простых элементов для текста, надо чё-то придумать.
 
         // TODO нужно в найти место видимое всегда для юзера, и там оставить лейбл как управлять через клаву/esc/enter
@@ -87,16 +88,26 @@ export default class View {
         // Переопределяется в наследниках
     }
 
-    onSubmit(e: Event) {
+
+
+
+    // MARK: - V2
+    // init view with arguments
+    init(args: any): void {
         // Переопределяется в наследниках
     }
 
-    // Не кэшировать вью
-    cacheable() {
-        return true;
+    // free resources when view exits
+    destroy(): void {
+        // Переопределяется в наследниках
     }
 
-    // Вью показана
-    appear(args: any) {}
+    // MARK: ActionsDelegate
+
+    onUp() {}
+    onDown() {}
+    onLeft() {}
+    onRight() {}
+    onSubmit() {}
 }
  
