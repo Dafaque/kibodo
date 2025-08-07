@@ -6,7 +6,7 @@ interface Option {
 }
 
 export default class Menu extends View {
-    options: any[];
+    options: Option[];
     selectedIndex: number;
 
     constructor(options: Option[] = []) {
@@ -15,8 +15,10 @@ export default class Menu extends View {
         this.selectedIndex = 0;
     }
 
+    // Causes re-render!
     addItem(text: string, action: () => void) {
         this.options.push({ label: text, action });
+        this.render();
     }
 
     renderContent() {
@@ -30,38 +32,24 @@ export default class Menu extends View {
                 item.classList.add('selected');
             }
             
-            item.textContent = option.label || option;
+            item.textContent = option.label;
             item.dataset.index = index.toString();
-            
-            if (option.action) {
-                item.dataset.action = option.action;
-            }
-            
             container.appendChild(item);
         });
         
         return container;
     }
 
-    onKeyDown(e) {
-        switch (e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                this.selectedIndex = Math.max(0, this.selectedIndex - 1);
-                this.updateSelection();
-                break;
-                
-            case 'ArrowDown':
-                e.preventDefault();
-                this.selectedIndex = Math.min(this.options.length - 1, this.selectedIndex + 1);
-                this.updateSelection();
-                break;
-                
-            case 'Enter':
-                e.preventDefault();
-                this.selectCurrent();
-                break;
-        }
+    onUp = () => {
+        this.selectedIndex = Math.max(0, this.selectedIndex - 1);
+        this.updateSelection();
+    }
+    onDown = () => {
+        this.selectedIndex = Math.min(this.options.length - 1, this.selectedIndex + 1);
+        this.updateSelection();
+    }
+    onSubmit = () => {
+        this.selectCurrent();
     }
 
     updateSelection() {

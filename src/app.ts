@@ -1,57 +1,89 @@
-import Router from "./router";
 import View from "./views/view";
 
-declare global {
-    interface Window {
-        app: App; // TODO: костыль, сделать нормально через статичесий синглтон или еще как
-    }
+const helpLabel = `
+← → ↑ ↓ to navigate
+ENTER to select
+ESC to go back
+TAB to focus
+
+SPACE to scroll down
+SHIFT+SPACE to scroll up
+`
+
+interface AppOptions {
+    help?: boolean;
 }
 
 export default class App {
-    currentView: View | null;
-    router: Router | null;
+    view: View | null;
+    viewsStack: View[];
 
-    constructor() {
-        this.currentView = null;
-        this.router = null;
-        
-        // TODO нафиг делегирование события. В currentView просто вызываем onUpPressed, onDown..... В фрейме 6 клавиш, больше не будет.
-        // Глобальный обработчик ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                if (this.currentView && this.currentView.goBack) {
-                    this.currentView.goBack();
-                }
-            }
-        });
-        
-        // Проксирование событий в currentView
-        document.addEventListener('keydown', (e) => {
-            if (this.currentView && this.currentView.onKeyDown) {
-                this.currentView.onKeyDown(e);
-            }
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            if (this.currentView && this.currentView.onKeyUp) {
-                this.currentView.onKeyUp(e);
-            }
-        });
-        
-        document.addEventListener('submit', (e) => {
-            if (this.currentView && this.currentView.onSubmit) {
-                this.currentView.onSubmit(e);
-            }
-        });
+    constructor(homeView: View, options?: AppOptions) {
+        this.view = homeView;
+        this.viewsStack = [homeView];
+        this.listenKeyboard();
         window.app = this;
+        this.view.render();
+        if (options?.help) {
+            this.showHelp();
+        }
     }
-    
-    setCurrentView(view: View | null) {
-        this.currentView = view;
+
+    listenKeyboard() {
+        document.addEventListener('keydown', (e) => {
+           switch (e.key) {
+            case 'Escape':
+                e.preventDefault();
+                this.handleESC();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                this.view?.onUp();
+                break;
+            case 'ArrowDown':
+                e.preventDefault();
+                this.view?.onDown();
+                break;
+            case 'Enter':
+                e.preventDefault();
+                this.view?.onSubmit();
+                break;
+            default:
+                this.view?.onKeyDown(e);
+           }
+        });
+
     }
-    
-    setRouter(router: Router) {
-        this.router = router;
+
+    handleESC() {
+        this.pop();
+    }
+
+    push(view: View, args?: any): Promise<any> {
+        return new Promise<any>((resolve) => { 
+            this.viewsStack.push(view);
+            this.view = view;
+            this.view.init(args);
+            this.view.render();
+            this.view.__popResolver = resolve;
+        });
+    }
+
+    pop(args?: any) {
+        if (this.viewsStack.length === 1) {
+            return;
+        }
+        let v = this.viewsStack.pop();
+        v?.destroy();
+        v?.__popResolver(args);
+        this.view = this.viewsStack[this.viewsStack.length - 1];
+        this.view.render();
+    }
+
+    showHelp() {
+        const helpElement = document.createElement('pre');
+        helpElement.textContent = helpLabel;
+        helpElement.classList.add('help');
+        document.body.appendChild(helpElement);
     }
 }

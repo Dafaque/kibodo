@@ -1,62 +1,51 @@
-import View from "./view.js";
+import View from "./view";
+import SelectEditView from "./select-edit";
+import TextEditView from "./text-edit";
+
+enum FieldType {
+    TEXT = 0,
+    CHECKBOX = 1,
+    SELECT = 2,
+}
+
+interface FieldSelectOption {
+    value: string;
+    label: string;
+}
 
 interface Field {
     name: string;
     label: string;
-    type: string;
-    placeholder: string;
-    readonly: boolean;
-    value: string;
-    defaultValue: string;
+    type: FieldType;
+    placeholder?: string;
+    value?: string | boolean;
+    readonly?: boolean;
+    options?: FieldSelectOption[];
 }
 
-export default class Form extends View {
-    fields: Record<string, Field>;
+class Form extends View {
+    fields: Field[];
     currentFieldIndex: number;
-    values: Record<string, string>;
     onSave: ((values: Record<string, string>) => void) | null;
 
-    constructor() {
+    constructor(fields: Field[] = []) {
         super();
-        this.fields = {};
+        this.fields = fields;
         this.currentFieldIndex = 0;
-        this.values = {};
-        
-        // Инициализируем значения
-        Object.values(this.fields).forEach(field => {
-            this.values[field.name] = field.value || '';
-        });
     }
 
 
-    addField(name: string, label: string, type: string, options: Record<string, any> = {}): void {
-        const field = {
-            name,
-            label,
-            type,
-            placeholder: options.placeholder,
-            readonly: options.readonly || false,
-            value: options.value,
-            defaultValue: options.defaultValue,
-            ...options
-        };
-        
-        this.fields[field.name] = field;
-        
-        // Устанавливаем defaultValue сразу при добавлении поля
-        if (field.defaultValue !== undefined) {
-            this.values[field.name] = field.defaultValue;
-        } else if (field.value !== undefined) {
-            this.values[field.name] = field.value;
-        }
+    addField(field: Field): void {
+        this.fields.push(field);
+        this.render();
     }
 
     renderContent() {
         const form = document.createElement('form');
         form.className = 'form';
         let firstEditableFieldFound = false;
-        Object.values(this.fields).forEach((field, index) => {
-            if (!firstEditableFieldFound && !field.readonly) {
+        this.fields.forEach((field, index) => {
+            if (!firstEditableFieldFound && field.readonly === undefined) {
                 firstEditableFieldFound = true;
                 this.currentFieldIndex = index;
             }
@@ -78,35 +67,35 @@ export default class Form extends View {
             label.textContent = field.label || field.name;
             fieldGroup.appendChild(label);
             
-            if (field.readonly) {
-                const value = document.createElement('div');
-                value.className = 'field-value readonly';
-                value.textContent = this.values[field.name] || field.value || '';
-                fieldGroup.appendChild(value);
-            } else if (field.type === 'checkbox') {
+            if (field.type === FieldType.CHECKBOX) {
                 const checkbox = document.createElement('div');
                 checkbox.className = 'field-value checkbox';
-                checkbox.textContent = this.values[field.name] || field.value ? '[X]' : '[ ]';
+                checkbox.textContent = field.value ? '[X]' : '[ ]';
                 checkbox.dataset.fieldName = field.name;
                 fieldGroup.appendChild(checkbox);
+            } else if (field.type === FieldType.SELECT) {
+                const value = document.createElement('div');
+                value.className = 'field-value';
+                const selectedOption = field.options?.find(option => option.value === field.value);
+                value.textContent = selectedOption?.label || field.placeholder || 'Select...';
+                fieldGroup.appendChild(value);
             } else {
                 const value = document.createElement('div');
                 value.className = 'field-value';
-                value.textContent = this.values[field.name] || field.value || field.placeholder || 'Enter...';
+                value.textContent = field.value?.toString() || field.placeholder || 'Enter...';
                 fieldGroup.appendChild(value);
             }
             
             form.appendChild(fieldGroup);
         });
         
-        // Добавляем кнопку Save
         const saveButton = document.createElement('button');
         saveButton.className = 'btn save-button';
         saveButton.textContent = 'Save';
         saveButton.type = 'submit';
         saveButton.dataset.fieldIndex = this.fields.length.toString();
         
-        if (this.currentFieldIndex === Object.keys(this.fields).length) {
+        if (this.currentFieldIndex === this.fields.length) {
             saveButton.classList.add('selected');
         }
         
@@ -115,39 +104,20 @@ export default class Form extends View {
         return form;
     }
 
-    onKeyDown(e: KeyboardEvent) {
-        switch (e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                this.navigateField(-1);
-                break;
-                
-            case 'ArrowDown':
-                e.preventDefault();
-                this.navigateField(1);
-                break;
-                
-            case 'Tab':
-                e.preventDefault();
-                this.navigateField(1);
-                break;
-                
-            case 'Enter':
-                e.preventDefault();
-                this.handleEnter();
-                break;
-        }
+    onUp = () => {
+        this.navigateField(-1);
+    }
+    onDown = () => {
+        this.navigateField(1);
     }
 
     navigateField(direction: number) {
-        // Убираем выделение с текущего элемента
         const currentSelected = document.querySelector('.form-group.selected, .save-button.selected');
         if (currentSelected) {
             currentSelected.classList.remove('selected');
         }
-        // Вычисляем новый индекс
         let newIndex = this.currentFieldIndex + direction;
-        const maxIndex = Object.keys(this.fields).length; // включая кнопку Save
+        const maxIndex = this.fields.length;
         
         if (newIndex < 0) {
             newIndex = maxIndex;
@@ -155,17 +125,14 @@ export default class Form extends View {
             newIndex = 0;
         }
         
-        // Пропускаем readonly поля при навигации
         if (newIndex <  maxIndex) {
             const field = this.fields[newIndex];
             if (field && field.readonly) {
-                // Пропускаем readonly поле
                 if (direction > 0) {
                     newIndex++;
                 } else {
                     newIndex--;
                 }
-                // Рекурсивно вызываем для следующего поля
                 this.currentFieldIndex = newIndex;
                 this.navigateField(direction);
                 return;
@@ -174,15 +141,12 @@ export default class Form extends View {
         
         this.currentFieldIndex = newIndex;
         
-        // Выделяем новый элемент
         if (newIndex === maxIndex) {
-            // Кнопка Save
             const saveButton = document.querySelector('.save-button');
             if (saveButton) {
                 saveButton.classList.add('selected');
             }
         } else {
-            // Поле формы
             const fieldGroup = document.querySelector(`[data-field-index="${newIndex}"]`);
             if (fieldGroup) {
                 fieldGroup.classList.add('selected');
@@ -190,14 +154,11 @@ export default class Form extends View {
         }
     }
 
-    handleEnter() { // TODO: Костыль какаой-то
-        if (this.currentFieldIndex === Object.keys(this.fields).length) {
-            // Кнопка Save
+    onSubmit() { // TODO: Костыль какаой-то
+        if (this.currentFieldIndex === this.fields.length) {
             this.save();
         } else {
-            // Поле формы
-            
-            const field = Object.values(this.fields)[this.currentFieldIndex];
+            const field = this.fields[this.currentFieldIndex];
             if (field && !field.readonly) {
                 this.editField(field);
             }
@@ -205,67 +166,49 @@ export default class Form extends View {
     }
 
     editField(field: Field) {
-        if (field.type === 'checkbox') {
-            // Переключаем checkbox
-            this.values[field.name] = !this.values[field.name] ? 'true' : 'false';
+        if (field.type === FieldType.CHECKBOX) {
+            console.log('checkbox', field.value);
+            field.value = field.value == 'true' ? 'false' : 'true';
             const checkbox = document.querySelector(`[data-field-name="${field.name}"]`);
             if (checkbox) {
-                checkbox.textContent = this.values[field.name] ? '[X]' : '[ ]';
+                checkbox.textContent = field.value == 'true' ? '[X]' : '[ ]';
             }
-        } else if (field.type === 'select') {
-            // Переходим к выбору опции
-            const currentPath = window.app.router?.getCurrentPath();
-            const selectPath = this.getChildPath(currentPath || "", "select-edit");
-            
-            window.app?.router?.navigate(selectPath, { // TODO Обычный push
-                field: field,
-                currentValue: this.values[field.name],
-                onSave: (value: any) => {
-                    this.values[field.name] = value;
-                    this.render();
-                }
+        } else if (field.type === FieldType.SELECT) {
+            window.app?.push(
+                new SelectEditView(field.name, field.options),
+            ).then((value) => {
+                if (value === undefined || value === null) { return; }
+                field.value = value;
+                this.render();
             });
         } else {
-            // Переходим к вводу текста
-            const currentPath = window.app?.router?.getCurrentPath();
-            const textPath = this.getChildPath(currentPath || "", "text-edit");
-            
-            window.app?.router?.navigate(textPath, { // TODO Обычный push, нафиг сложную навигацию
-                field: field,
-                currentValue: this.values[field.name],
-                onSave: (value) => {
-                    this.values[field.name] = value;
-                    this.render();
-                }
+            window.app?.push(
+                new TextEditView(
+                    {
+                        field: field,
+                        currentValue: field.value?.toString() || '',
+                    }
+                )
+            ).then((value) => {
+                if (value === undefined || value === null) { return; }
+                field.value = value;
+                this.render();
             });
         }
-    }
-
-    getChildPath(parentPath, childSegment) { // TODO Костыль
-        if (parentPath === "/") {
-            return "/" + childSegment;
-        }
-        return parentPath + "/" + childSegment;
     }
 
     save() {
-        // Обрабатываем стилизованные checkbox
-        const checkboxes = document.querySelectorAll('.checkbox');
-        checkboxes.forEach(checkbox => {
-            const fieldName = (checkbox as HTMLElement).dataset.fieldName;
-            if (fieldName) {
-                this.values[fieldName] = (checkbox as HTMLElement).textContent === '[X]' ? 'true' : 'false';
+        let values = {};
+        this.fields.forEach(field => {
+            if (field.type === FieldType.CHECKBOX) {
+                values[field.name] = field.value === 'true' ? true : false;
+            } else {
+                values[field.name] = field.value;
             }
         });
         
-        // Вызываем callback если есть
-        if (this.onSave) {
-            this.onSave(this.values);
-        }
-    }
-
-    onSubmit(e: Event) {
-        e.preventDefault();
-        this.save();
+        this.onSave?.(values);
     }
 }
+
+export { Form, FieldType };
