@@ -2,9 +2,9 @@ import View from "./view";
 
 class TextView extends View {
     lines: string[];
-    constructor() {
+    constructor(content: string[] = []) {
         super();
-        this.lines = [];
+        this.lines = content;
     }
 
     renderContent() {

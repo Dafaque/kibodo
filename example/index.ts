@@ -1,4 +1,4 @@
-import App from '../src/app.ts';
-import Home from './Home.ts';
+import App from '../src/app';
+import Home from './Home';
 import "../themes/default.css";
-new App(new Home());
+new App(new Home(), { help: true });

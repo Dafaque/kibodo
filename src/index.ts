@@ -1,5 +1,5 @@
 export { default as App } from "./app";
-export { Form } from "./views/form";
+export { Form, FieldType } from "./views/form";
 export { default as Menu } from "./views/menu";
 export { default as Table } from "./views/table";
 export { default as View } from "./views/view";

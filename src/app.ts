@@ -1,16 +1,32 @@
 import View from "./views/view";
 
+const helpLabel = `
+← → ↑ ↓ to navigate
+ENTER to select
+ESC to go back
+TAB to focus
+
+SPACE to scroll down
+SHIFT+SPACE to scroll up
+`
+
+interface AppOptions {
+    help?: boolean;
+}
 
 export default class App {
     view: View | null;
     viewsStack: View[];
 
-    constructor(homeView: View) {
+    constructor(homeView: View, options?: AppOptions) {
         this.view = homeView;
         this.viewsStack = [homeView];
         this.listenKeyboard();
         window.app = this;
         this.view.render();
+        if (options?.help) {
+            this.showHelp();
+        }
     }
 
     listenKeyboard() {
@@ -62,5 +78,12 @@ export default class App {
         v?.__popResolver(args);
         this.view = this.viewsStack[this.viewsStack.length - 1];
         this.view.render();
+    }
+
+    showHelp() {
+        const helpElement = document.createElement('pre');
+        helpElement.textContent = helpLabel;
+        helpElement.classList.add('help');
+        document.body.appendChild(helpElement);
     }
 }

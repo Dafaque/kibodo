@@ -9,6 +9,12 @@ export default class FormView extends Form {
                 type: FieldType.TEXT,
             },
             {
+                name: "email",
+                label: "Email",
+                type: FieldType.TEXT,
+                value: "admin@example.com",
+            },
+            {
                 name: "os",
                 label: "Operating System",
                 type: FieldType.SELECT,
@@ -28,11 +34,22 @@ export default class FormView extends Form {
                 ]
             },
             {
+                name: "gender",
+                label: "Gender",
+                type: FieldType.SELECT,
+                value: "male",
+                options: [
+                    { label: "Male", value: "male" },
+                    { label: "Female", value: "female" },
+                ]
+            },
+            {
                 name: "usesKibodoFramework",
                 label: "Uses Kibodo Framework",
                 type: FieldType.CHECKBOX,
             }
         ]);
+        this.title = "Form view example";
     }
     onSave = console.log;
 }

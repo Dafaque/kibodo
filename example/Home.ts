@@ -1,6 +1,8 @@
 import Form from "./Form";
 import Menu from "../src/views/menu";
 import Readme from "./Readme";
+import TableView from "./Table";
+import ErrorView from "./Error";
 
 export default class Home extends Menu {
     constructor() {
@@ -17,10 +19,22 @@ export default class Home extends Menu {
                     action: () => {
                         window.app.push(new Readme());
                     }
-                }
+                },
+                {
+                    label: "Table",
+                    action: () => {
+                        window.app.push(new TableView());
+                    }
+                },
+                {
+                    label: "Error",
+                    action: () => {
+                        window.app.push(new ErrorView());
+                    }
+                }   
             ]
         );
-        this.title = "Home";
+        this.title = "Menu view example";
 
     }
 }

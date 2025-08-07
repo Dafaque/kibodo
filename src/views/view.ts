@@ -5,21 +5,12 @@ export default class View {
     title: string | null;
     error: string | null;
 
-    constructor() {
-        this.container = null;
-        this.title = null;
-        this.error = null;
-        // TODO нужно в найти место видимое всегда для юзера, и там оставить лейбл как управлять через клаву/esc/enter
-
-        // TODO нужен терминал-стайл спиннер. Через методы управлять показом спиннера.
-    }
+    constructor() {}
 
     render() {
-        // Создаем контейнер
         this.container = document.createElement('div');
         this.container.className = 'view';
-        
-        // Добавляем заголовок если есть
+
         if (this.title) {
             const titleElement = document.createElement('h1');
             titleElement.textContent = this.title;
@@ -34,12 +25,10 @@ export default class View {
             content = this.renderContent();
         }
         
-        // Рендерим содержимое
         if (content) {
             this.container?.appendChild(content);
         }
         
-        // Заменяем содержимое app
         const appElement = document.getElementById('app');
         if (appElement) {
             appElement.innerHTML = '';
@@ -56,11 +45,12 @@ export default class View {
     renderError():HTMLElement {
         const error = document.createElement('fieldset');
         const legend = document.createElement('legend');
-        legend.textContent = this.error;
+        legend.textContent = "Error";
         error.appendChild(legend);
         const message = document.createElement('pre');
         message.textContent = this.error;
         error.appendChild(message);
+        error.classList.add('error-container');
         return error;
     }
 

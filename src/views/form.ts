@@ -167,10 +167,11 @@ class Form extends View {
 
     editField(field: Field) {
         if (field.type === FieldType.CHECKBOX) {
-            field.value = field.value || 'false' ? 'true' : 'false';
+            console.log('checkbox', field.value);
+            field.value = field.value == 'true' ? 'false' : 'true';
             const checkbox = document.querySelector(`[data-field-name="${field.name}"]`);
             if (checkbox) {
-                checkbox.textContent = field.value ? '[X]' : '[ ]';
+                checkbox.textContent = field.value == 'true' ? '[X]' : '[ ]';
             }
         } else if (field.type === FieldType.SELECT) {
             window.app?.push(

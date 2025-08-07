@@ -1,31 +1,44 @@
 import View from "./view";
 
+interface DataSource {
+    // Fetch data from url
+    url: string;
+    // Headers to send with the request;
+    urlHeaders?: Record<string, string>;
+    // Attribute in response that represents the data
+    attr: string;
+}
+
 export default class Table extends View {
+    dataSource?: DataSource;
     data: any[];
     selectedRow: number;
-    onSelected: ((data: any) => void) | null;
-    // TODO добавить атрибут dataUrl. Подразумевается, что там будет храниться ссылка на получения данных методом GET. 
+    loading: boolean;
 
-    constructor(data = []) {
+    constructor(dataSource: DataSource = null) {
         super();
-        this.data = data;
+        this.dataSource = dataSource;
+        this.data = [];
         this.selectedRow = 0;
-        this.onSelected = null;
+        this.fetchData();
     }
 
     setData(data: any[]) {
         this.data = data;
     }
 
-    setOnSelected(callback: (data: any) => void) {
-        this.onSelected = callback;
-    }
-
     renderContent() {
         const container = document.createElement('div');
         container.className = 'table';
+        if (this.loading) {
+            const loading = document.createElement('div');
+            loading.className = 'loading';
+            loading.textContent = 'Loading...';
+            container.appendChild(loading);
+            return container;
+        }
         
-        if (this.data.length === 0) {
+        if (this.data === undefined || this.data.length === 0) {
             const emptyMessage = document.createElement('div');
             emptyMessage.className = 'empty-message';
             emptyMessage.textContent = 'No data available';
@@ -35,6 +48,7 @@ export default class Table extends View {
         
         // Создаем таблицу
         const table = document.createElement('table');
+        table.classList.add('terminal-table');
         
         // Заголовки
         const thead = document.createElement('thead');
@@ -75,25 +89,16 @@ export default class Table extends View {
         return container;
     }
 
-    onKeyDown(e: KeyboardEvent) {
-        switch (e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                this.selectedRow = Math.max(0, this.selectedRow - 1);
-                this.updateSelection();
-                break;
-                
-            case 'ArrowDown':
-                e.preventDefault();
-                this.selectedRow = Math.min(this.data.length - 1, this.selectedRow + 1);
-                this.updateSelection();
-                break;
-                
-            case 'Enter':
-                e.preventDefault();
-                this.selectCurrentRow();
-                break;
-        }
+    onUp() {
+        this.selectedRow = Math.max(0, this.selectedRow - 1);
+        this.updateSelection();
+    }
+    onDown() {
+        this.selectedRow = Math.min(this.data.length - 1, this.selectedRow + 1);
+        this.updateSelection();
+    }
+    onSubmit() {
+        this.selectCurrentRow();
     }
 
     updateSelection() {
@@ -112,5 +117,26 @@ export default class Table extends View {
             const selectedData = this.data[this.selectedRow];
             this.onSelected(selectedData);
         }
+    }
+
+    onSelected(data: any) {}
+
+    async fetchData() {
+        if (!this.dataSource) {return;}
+        this.loading = true;
+        this.render();
+        fetch(this.dataSource.url, {
+            headers: this.dataSource.urlHeaders,
+        })
+        .then(response => response.json())
+        .then(data => this.data = data[this.dataSource.attr])
+        .then(() => {
+            this.loading = false;
+            this.render();
+        }).catch(error => {
+            this.loading = false;
+            this.error = error.message;
+            this.render();
+        });
     }
 }
