@@ -4,13 +4,23 @@ import Readme from "./Readme";
 
 export default class Home extends Menu {
     constructor() {
-        super();
+        super(
+            [
+                {
+                    label: "Form",
+                    action: () => {
+                        window.app.push(new Form());
+                    }
+                },
+                {
+                    label: "Readme",
+                    action: () => {
+                        window.app.push(new Readme());
+                    }
+                }
+            ]
+        );
         this.title = "Home";
-        this.addItem("Form", () => {
-            window.app.push(new Form());
-        });
-        this.addItem("Readme", () => {
-            window.app.push(new Readme());
-        });
+
     }
 }

@@ -24,11 +24,11 @@ class TextView extends View {
     }
 
     onDown(): void {
-        window.scrollBy(0, 1);
+        window.scrollBy(0, 10);
     }
 
     onUp(): void {
-        window.scrollBy(0, -1);
+        window.scrollBy(0, -10);
     }
 
 }

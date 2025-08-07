@@ -1,19 +1,38 @@
-import {Form, FieldType, Field} from "../src/views/form";
+import {Form, FieldType} from "../src/views/form";
 
 export default class FormView extends Form {
     constructor() {
-        super();
-
-        this.addField(
-            new Field(
-                {
-                    name: "name",
-                    label: "Name",
-                    type: FieldType.TEXT,
-                    placeholder: "Enter your name",
-                    value: "John Doe"
-                }
-            )
-        )
+        super([
+            {
+                name: "name",
+                label: "Name",
+                type: FieldType.TEXT,
+            },
+            {
+                name: "os",
+                label: "Operating System",
+                type: FieldType.SELECT,
+                options: [
+                    {
+                        label: "Windows",
+                        value: "windows"
+                    },
+                    {
+                        label: "Linux",
+                        value: "linux"
+                    },
+                    {
+                        label: "MacOS",
+                        value: "macos"
+                    },
+                ]
+            },
+            {
+                name: "usesKibodoFramework",
+                label: "Uses Kibodo Framework",
+                type: FieldType.CHECKBOX,
+            }
+        ]);
     }
+    onSave = console.log;
 }

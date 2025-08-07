@@ -6,15 +6,16 @@ interface Option {
 }
 
 export default class Menu extends View {
-    options: any[];
+    options: Option[];
     selectedIndex: number;
 
-    constructor() {
+    constructor(options: Option[] = []) {
         super();
-        this.options = [];
+        this.options = options;
         this.selectedIndex = 0;
     }
 
+    // Causes re-render!
     addItem(text: string, action: () => void) {
         this.options.push({ label: text, action });
         this.render();
@@ -31,13 +32,8 @@ export default class Menu extends View {
                 item.classList.add('selected');
             }
             
-            item.textContent = option.label || option;
+            item.textContent = option.label;
             item.dataset.index = index.toString();
-            
-            if (option.action) {
-                item.dataset.action = option.action;
-            }
-            
             container.appendChild(item);
         });
         
