@@ -1,4 +1,6 @@
 export default class View {
+
+    __popResolver: (value: any) => void;
     container: HTMLElement | null;
     title: string | null;
     error: string | null;
@@ -48,7 +50,6 @@ export default class View {
     }
 
     renderContent():HTMLElement | null {
-        // Переопределяется в наследниках
         return null;
     }
 
@@ -63,50 +64,12 @@ export default class View {
         return error;
     }
 
-    goBack() {
-        if (window.app && window.app.router) {
-            const currentPath = window.app.router.getCurrentPath();
-            const parentPath = this.getParentPath(currentPath || "");
-            if (parentPath) {
-                window.app.router.navigate(parentPath);
-            }
-        }
-    }
-
-    getParentPath(path: string) {
-        const parts = path.split('/').filter(part => part);
-        if (parts.length === 0) {
-            return null;
-        }
-        parts.pop();
-        if (parts.length === 0) {
-            return "/";
-        }
-        return "/" + parts.join("/");
-    }
-
-    // Методы для обработки событий (переопределяются в наследниках)
-    onKeyDown(e: KeyboardEvent) {
-        // Переопределяется в наследниках
-    }
-
-    onKeyUp(e: KeyboardEvent) {
-        // Переопределяется в наследниках
-    }
-
-
-
-
     // MARK: - V2
     // init view with arguments
-    init(args: any): void {
-        // Переопределяется в наследниках
-    }
+    init(args: any): void {}
 
     // free resources when view exits
-    destroy(): void {
-        // Переопределяется в наследниках
-    }
+    destroy(): void {}
 
     // MARK: ActionsDelegate
 
@@ -115,5 +78,6 @@ export default class View {
     onLeft() {}
     onRight() {}
     onSubmit() {}
+    onKeyDown(e: KeyboardEvent) {}
 }
  

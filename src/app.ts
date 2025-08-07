@@ -10,63 +10,56 @@ export default class App {
         this.viewsStack = [homeView];
         this.listenKeyboard();
         window.app = this;
+        this.view.render();
     }
 
     listenKeyboard() {
         document.addEventListener('keydown', (e) => {
-            e.preventDefault();
            switch (e.key) {
             case 'Escape':
+                e.preventDefault();
                 this.handleESC();
                 break;
             case 'ArrowUp':
+                e.preventDefault();
                 this.view?.onUp();
                 break;
             case 'ArrowDown':
+                e.preventDefault();
                 this.view?.onDown();
                 break;
             case 'Enter':
+                e.preventDefault();
                 this.view?.onSubmit();
                 break;
             default:
-                this.handleKeyEvent(e);
+                this.view?.onKeyDown(e);
            }
         });
 
     }
 
-    handleKeyEvent(e: KeyboardEvent) {
-        
-    }
-
     handleESC() {
         this.pop();
     }
-    
-    setView(view: View | null) {
-        this.view = view;
-    }
 
-    //! ВЬЮ ПОДИСЫВАЕТСЯ НА ПУШ ЕСЛИ ОЧЕТ ВИДЕТЬ ИЗМЕНЕНИЯ ВО ЬЮ В РЕЗУЛЬТАТЕ POP
     push(view: View, args?: any): Promise<any> {
-        let callback = new Promise((resolve, reject) => { 
+        return new Promise<any>((resolve) => { 
             this.viewsStack.push(view);
             this.view = view;
             this.view.init(args);
             this.view.render();
-            return resolve(this.view);
-            
+            this.view.__popResolver = resolve;
         });
-        return callback;
     }
 
-    //! ВОЗВРАЩАЕМ ДАННЫЕ ЕСЛИ РОДИТЕЛЬСКОЕ ВЬЮ ОЖИДАЕТ ИЗМЕНЕНИЯ
     pop(args?: any) {
         if (this.viewsStack.length === 1) {
             return;
         }
         let v = this.viewsStack.pop();
         v?.destroy();
+        v?.__popResolver(args);
         this.view = this.viewsStack[this.viewsStack.length - 1];
         this.view.render();
     }

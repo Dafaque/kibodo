@@ -9,14 +9,15 @@ export default class Menu extends View {
     options: any[];
     selectedIndex: number;
 
-    constructor(options: Option[] = []) {
+    constructor() {
         super();
-        this.options = options;
+        this.options = [];
         this.selectedIndex = 0;
     }
 
     addItem(text: string, action: () => void) {
         this.options.push({ label: text, action });
+        this.render();
     }
 
     renderContent() {
@@ -43,25 +44,16 @@ export default class Menu extends View {
         return container;
     }
 
-    onKeyDown(e) {
-        switch (e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                this.selectedIndex = Math.max(0, this.selectedIndex - 1);
-                this.updateSelection();
-                break;
-                
-            case 'ArrowDown':
-                e.preventDefault();
-                this.selectedIndex = Math.min(this.options.length - 1, this.selectedIndex + 1);
-                this.updateSelection();
-                break;
-                
-            case 'Enter':
-                e.preventDefault();
-                this.selectCurrent();
-                break;
-        }
+    onUp = () => {
+        this.selectedIndex = Math.max(0, this.selectedIndex - 1);
+        this.updateSelection();
+    }
+    onDown = () => {
+        this.selectedIndex = Math.min(this.options.length - 1, this.selectedIndex + 1);
+        this.updateSelection();
+    }
+    onSubmit = () => {
+        this.selectCurrent();
     }
 
     updateSelection() {

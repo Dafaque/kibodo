@@ -1,39 +1,46 @@
-{ 
-  "name": "kibodo",
-  "version": "0.0.4",
-  "description": "Keyboard-only frontend framework",
-  "main": "src/index.ts",
-  "types": "src/types/global.d.ts",
-  "type": "module",
-  "exports": {
-    ".": {
-      "typescript": "./src/index.ts",
-      "import": "./src/index.ts",
-      "require": "./src/index.ts"
+{
+    "name": "kibodo",
+    "version": "0.0.4",
+    "description": "Keyboard-only frontend framework",
+    "main": "src/index.ts",
+    "types": "src/types/global.d.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "vite dev example -c vite.config.js"
     },
-    "./themes/default.css": {
-      "import": "./themes/default.css"
+    "exports": {
+        ".": {
+            "typescript": "./src/index.ts",
+            "import": "./src/index.ts",
+            "require": "./src/index.ts"
+        },
+        "./themes/default.css": {
+            "import": "./themes/default.css"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/Dafaque/kibodo.git"
+    },
+    "keywords": [
+        "frontend",
+        "framework",
+        "keyboard",
+        "typescript",
+        "ui",
+        "components"
+    ],
+    "author": "Dafaque",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Dafaque/kibodo/issues"
+    },
+    "homepage": "https://github.com/Dafaque/kibodo#readme",
+    "peerDependencies": {
+        "typescript": ">=4.0.0"
+    },
+    "devDependencies": {
+        "sass-embedded": "^1.89.2",
+        "vite": "^7.0.6"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/Dafaque/kibodo.git"
-  },
-  "keywords": [
-    "frontend",
-    "framework",
-    "keyboard",
-    "typescript",
-    "ui",
-    "components"
-  ],
-  "author": "Dafaque",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Dafaque/kibodo/issues"
-  },
-  "homepage": "https://github.com/Dafaque/kibodo#readme",
-  "peerDependencies": {
-    "typescript": ">=4.0.0"
-  }
 }

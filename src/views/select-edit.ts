@@ -1,7 +1,6 @@
-import View from "./view";
 import Menu from "./menu";
 
-export default class SelectView extends View {
+export default class SelectEditView extends Menu {
     menu: Menu | null;
     onSave: ((value: any) => void) | null;
 

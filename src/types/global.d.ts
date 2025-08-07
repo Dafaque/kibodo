@@ -5,3 +5,5 @@ declare global {
     app: App;
   }
 }
+
+export {};
