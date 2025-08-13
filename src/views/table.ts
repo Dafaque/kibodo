@@ -129,7 +129,12 @@ export default class Table extends View {
             headers: this.dataSource.urlHeaders,
         })
         .then(response => response.json())
-        .then(data => this.data = data[this.dataSource.attr])
+        .then(data => {
+            if (!Object.hasOwn(data, this.dataSource.attr)) {
+                throw new Error('Response does not contain property <' + this.dataSource.attr + '>');
+            }
+            this.data = data[this.dataSource.attr];
+        })
         .then(() => {
             this.loading = false;
             this.render();
