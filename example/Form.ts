@@ -7,7 +7,7 @@ export default class FormView extends Form {
                 name: "id",
                 label: "ID",
                 type: FieldType.TEXT,
-                value: "1234567890",
+                value: 1234567890,
                 readonly: true,
             },
             {
@@ -55,7 +55,7 @@ export default class FormView extends Form {
                 label: "Uses Kibodo Framework",
                 type: FieldType.CHECKBOX,
                 value: true,
-            }
+            },
         ]);
         this.title = "Form view example";
     }

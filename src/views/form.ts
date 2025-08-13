@@ -18,7 +18,7 @@ interface Field {
     label: string;
     type: FieldType;
     placeholder?: string;
-    value?: string | boolean;
+    value?: string | number | boolean;
     readonly?: boolean;
     options?: FieldSelectOption[];
 }
@@ -26,7 +26,7 @@ interface Field {
 class Form extends View {
     fields: Field[];
     currentFieldIndex: number;
-    onSave: ((values: Record<string, string | boolean>) => void) | null;
+    onSave: ((values: Record<string, string | number | boolean>) => void) | null;
 
     constructor(fields: Field[] = []) {
         super();
@@ -120,7 +120,6 @@ class Form extends View {
         let newIndex = this.currentFieldIndex + direction;
         const maxIndex = this.fields.length;
         
-        console.log(newIndex, direction, maxIndex);
         if (newIndex < 0) {
             newIndex = maxIndex;
         } else if (newIndex > maxIndex) {
@@ -187,11 +186,7 @@ class Form extends View {
     save() {
         let values = {};
         this.fields.forEach(field => {
-            if (field.type === FieldType.CHECKBOX) {
-                values[field.name] = field.value === 'true' ? true : false;
-            } else {
-                values[field.name] = field.value;
-            }
+            values[field.name] = field.value;
         });
         
         this.onSave?.(values);
