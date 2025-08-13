@@ -26,12 +26,19 @@ interface Field {
 class Form extends View {
     fields: Field[];
     currentFieldIndex: number;
-    onSave: ((values: Record<string, string>) => void) | null;
+    onSave: ((values: Record<string, string | boolean>) => void) | null;
 
     constructor(fields: Field[] = []) {
         super();
         this.fields = fields;
-        this.currentFieldIndex = 0;
+
+        let minEditableIndex = 0;
+        for (let i = 0; i < this.fields.length; i++) {
+            if (this.fields[i].readonly) continue;
+            minEditableIndex = i;
+            break;
+        }
+        this.currentFieldIndex = minEditableIndex;
     }
 
 
@@ -43,13 +50,7 @@ class Form extends View {
     renderContent() {
         const form = document.createElement('form');
         form.className = 'form';
-        let firstEditableFieldFound = false;
         this.fields.forEach((field, index) => {
-            if (!firstEditableFieldFound && field.readonly === undefined) {
-                firstEditableFieldFound = true;
-                this.currentFieldIndex = index;
-            }
-            
             const fieldGroup = document.createElement('div');
             fieldGroup.className = 'form-group';
             fieldGroup.dataset.fieldIndex = index.toString();
@@ -112,31 +113,18 @@ class Form extends View {
     }
 
     navigateField(direction: number) {
-        const currentSelected = document.querySelector('.form-group.selected, .save-button.selected');
-        if (currentSelected) {
-            currentSelected.classList.remove('selected');
+        const currentSelected = document.getElementsByClassName('selected');
+        for (let i = 0; i < currentSelected.length; i++) {
+            currentSelected[i].classList.remove('selected');
         }
         let newIndex = this.currentFieldIndex + direction;
         const maxIndex = this.fields.length;
         
+        console.log(newIndex, direction, maxIndex);
         if (newIndex < 0) {
             newIndex = maxIndex;
         } else if (newIndex > maxIndex) {
             newIndex = 0;
-        }
-        
-        if (newIndex <  maxIndex) {
-            const field = this.fields[newIndex];
-            if (field && field.readonly) {
-                if (direction > 0) {
-                    newIndex++;
-                } else {
-                    newIndex--;
-                }
-                this.currentFieldIndex = newIndex;
-                this.navigateField(direction);
-                return;
-            }
         }
         
         this.currentFieldIndex = newIndex;
@@ -167,11 +155,10 @@ class Form extends View {
 
     editField(field: Field) {
         if (field.type === FieldType.CHECKBOX) {
-            console.log('checkbox', field.value);
-            field.value = field.value == 'true' ? 'false' : 'true';
+            field.value = field.value ? false : true;
             const checkbox = document.querySelector(`[data-field-name="${field.name}"]`);
             if (checkbox) {
-                checkbox.textContent = field.value == 'true' ? '[X]' : '[ ]';
+                checkbox.textContent = field.value === true ? '[X]' : '[ ]';
             }
         } else if (field.type === FieldType.SELECT) {
             window.app?.push(

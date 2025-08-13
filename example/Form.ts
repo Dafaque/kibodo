@@ -4,6 +4,13 @@ export default class FormView extends Form {
     constructor() {
         super([
             {
+                name: "id",
+                label: "ID",
+                type: FieldType.TEXT,
+                value: "1234567890",
+                readonly: true,
+            },
+            {
                 name: "name",
                 label: "Name",
                 type: FieldType.TEXT,
@@ -47,6 +54,7 @@ export default class FormView extends Form {
                 name: "usesKibodoFramework",
                 label: "Uses Kibodo Framework",
                 type: FieldType.CHECKBOX,
+                value: true,
             }
         ]);
         this.title = "Form view example";
